@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback</title>
+    <style>
+        body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #ece5dd;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.chat-container {
+    width: 700px;
+    max-width: 90%;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.chat-header {
+    padding: 10px;
+    background-color: #075e54;
+    color: white;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.chat-messages {
+    flex-grow: 1;
+    padding: 10px;
+    overflow-y: auto;
+    background-color: #ece5dd;
+}
+
+.chat-input {
+    display: flex;
+    border-top: 1px solid #ddd;
+    background-color: #fff;
+    padding: 10px;
+}
+
+.chat-input textarea {
+    flex-grow: 1;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    resize: none;
+    outline: none;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.chat-input button {
+    border: none;
+    background-color: #25d366;
+    color: white;
+    border-radius: 50%;
+    padding: 10px;
+    margin-left: 10px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.chat-input button:hover {
+    background-color: #128c7e;
+}
+
+.feedback-item {
+    background-color: #dcf8c6;
+    border-radius: 7.5px;
+    padding: 10px;
+    margin: 5px 0;
+    max-width: 70%;
+    word-wrap: break-word;
+    position: relative;
+}
+
+.feedback-item:before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 10px;
+    border-width: 6px;
+    border-style: solid;
+    border-color: transparent transparent transparent #dcf8c6;
+}
+
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h2>Feedback</h2>
+        </div>
+        <div class="chat-messages" id="feedbackList">
+            <!-- Feedback messages will be displayed here -->
+        </div>
+        <div class="chat-input">
+            <textarea id="feedbackText" placeholder="Type a message..."></textarea>
+            <button onclick="postFeedback()">Send</button>
+        </div>
+    </div>
+    <script>
+     function postFeedback() {
+    var feedbackText = document.getElementById('feedbackText').value;
+    if (feedbackText.trim() === "") {
+        alert("Please enter some feedback.");
+        return;
+    }
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "submit_feedback.php", true);
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            document.getElementById('feedbackText').value = '';
+            loadFeedback();
+        }
+    };
+    xhr.send("feedback=" + encodeURIComponent(feedbackText));
+}
+
+function loadFeedback() {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "get_feedback.php", true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            document.getElementById('feedbackList').innerHTML = xhr.responseText;
+        }
+    };
+    xhr.send();
+}
+
+window.onload = function() {
+    loadFeedback();
+};
+
+    </script>
+</body>
+</html>

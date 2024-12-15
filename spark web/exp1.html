@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Induction Machine Calculations</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .section {
+            margin-bottom: 30px;
+            border-bottom: 2px solid #007BFF;
+            padding-bottom: 15px;
+        }
+        .section h2 {
+            color: #007BFF;
+            margin: 0 0 10px 0;
+            font-size: 1.5em;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        .input-group input:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+        button {
+            padding: 12px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #f9f9f9;
+            color: #333;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+        }
+        .result h3 {
+            margin-top: 0;
+            color: #007BFF;
+        }
+        .result .result-item {
+            margin-bottom: 10px;
+        }
+        .result .result-item span {
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="text-align: center; color: #007BFF;">Experiment 1:LOAD TEST ON 3-PHASE SQUIRREL CAGE INDUCTION MOTOR</h1>
+        <div class="section">
+            <h2>SAMPLE CALCULATION (Set No. __)</h2>
+            <div class="input-group">
+                <label for="V">V (V):</label>
+                <input type="number" id="V" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="I">I (A):</label>
+                <input type="number" id="I" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="W1">W1 (W):</label>
+                <input type="number" id="W1" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="W2">W2 (W):</label>
+                <input type="number" id="W2" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="N">N (rpm):</label>
+                <input type="number" id="N" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="S1">S1 (Kg):</label>
+                <input type="number" id="S1" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="S2">S2 (Kg):</label>
+                <input type="number" id="S2" onkeydown="focusNext(event)">
+            </div>
+            <button onclick="calculateSample()">Calculate</button>
+            <div class="result" id="sampleResult"></div>
+        </div>
+    </div>
+
+    <script>
+        function focusNext(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevent form submission
+                let formElements = Array.from(document.querySelectorAll('input, button'));
+                let index = formElements.indexOf(event.target);
+                if (index !== -1 && index < formElements.length - 1) {
+                    formElements[index + 1].focus();
+                }
+            }
+        }
+
+        function calculateSample() {
+            const V = parseFloat(document.getElementById('V').value);
+            const I = parseFloat(document.getElementById('I').value);
+            const W1 = parseFloat(document.getElementById('W1').value);
+            const W2 = parseFloat(document.getElementById('W2').value);
+            const N = parseFloat(document.getElementById('N').value);
+            const S1 = parseFloat(document.getElementById('S1').value);
+            const S2 = parseFloat(document.getElementById('S2').value);
+            const R = 0.135; // Radius of brake drum in meters
+            const Ns = 1500; // Synchronous speed in rpm
+
+            const inputPower = W1 + W2;
+            const cosPhi1 = Math.cos(Math.atan((Math.sqrt(3) * (W1 - W2)) / (W1 + W2)));
+            const slip = ((Ns - N) / Ns) * 100;
+            const torque = R * (S1 - S2) * 9.81;
+            const outputPower = (2 * Math.PI * N * torque) / 60;
+            const efficiency = (outputPower / inputPower) * 100;
+
+            // Additional kVAR and Capacitance Calculation
+            const cosPhi2 = 0.95;
+            const tanPhi1 = Math.tan(Math.acos(cosPhi1));
+            const tanPhi2 = Math.tan(Math.acos(cosPhi2));
+            const additionalKVAR = inputPower * (tanPhi1 - tanPhi2) / 1000;
+            const f = 50; // Frequency in Hz
+            const C = (additionalKVAR * 1000) / (3 * Math.pow(2 * Math.PI * f * V, 2)) * 1e6;
+
+            document.getElementById('sampleResult').innerHTML = `
+                <h3>Given Values:</h3>
+                <div class="result-item"><span>V:</span> ${V} V</div>
+                <div class="result-item"><span>I:</span> ${I} A</div>
+                <div class="result-item"><span>W1:</span> ${W1} W</div>
+                <div class="result-item"><span>W2:</span> ${W2} W</div>
+                <div class="result-item"><span>N:</span> ${N} rpm</div>
+                <div class="result-item"><span>S1:</span> ${S1} Kg</div>
+                <div class="result-item"><span>S2:</span> ${S2} Kg</div>
+                <div class="result-item"><span>Radius of brake drum (R):</span> ${R} m</div>
+                <div class="result-item"><span>Synchronous speed (Ns):</span> ${Ns} rpm</div>
+
+                <h3>Calculated Values:</h3>
+                <div class="result-item"><span>Input Power (W):</span> W1 + W2 = ${inputPower.toFixed(2)} W</div>
+                <div class="result-item"><span>Power Factor (cosΦ<sub>1</sub>):</span> cosΦ<sub>1</sub> = cos(atan((sqrt(3)*(W1 - W2))/ (W1 + W2))) = ${cosPhi1.toFixed(4)}</div>
+                <div class="result-item"><span>Percentage Slip (s):</span> s = ((Ns - N) / Ns) * 100 = ${slip.toFixed(2)} %</div>
+                <div class="result-item"><span>Torque (T):</span> T = R * (S1 - S2) * g = ${torque.toFixed(2)} N-m</div>
+                <div class="result-item"><span>Output Power (P):</span> P = (2πNT/60) = ${outputPower.toFixed(2)} W</div>
+                <div class="result-item"><span>Efficiency (η):</span> η = (Output Power / Input Power) * 100 = ${efficiency.toFixed(2)} %</div>
+                <div class="result-item"><span>cosΦ2=</span>0.95</div>
+                <div class="result-item"><span>Additional kVAR required:</span> Additional kVAR = Input Power * (tanΦ<sub>1</sub> - tanΦ<sub>2</sub>) / 1000 = ${additionalKVAR.toFixed(2)} kVAR</div>
+                <div class="result-item"><span>f=</span>50 Hz</div>
+                <div class="result-item"><span>Capacitance per phase (C):</span> C = (kVAR * 1000) / (3 * (2πf)(V)<sup>2</sup>) = ${C.toFixed(2)} μF</div>
+            `;
+        }
+    </script>
+</body>
+</html>

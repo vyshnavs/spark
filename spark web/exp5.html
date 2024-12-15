@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Induction Machine Calculations</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .section {
+            margin-bottom: 30px;
+            border-bottom: 2px solid #007BFF;
+            padding-bottom: 15px;
+        }
+        .subsection {
+            margin-bottom: 30px;
+            border-bottom: 2px solid #00ff62;
+            padding-bottom: 15px;
+        }
+        
+        .section h2 {
+            color: #007BFF;
+            margin: 0 0 10px 0;
+            font-size: 1.5em;
+        }
+
+        .section h3 {
+            color: #007BFF;
+            margin: 10px 0;
+            font-size: 1.2em;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+
+        button {
+            padding: 12px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #f9f9f9;
+            color: #333;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+        }
+
+        .result h3 {
+            margin-top: 0;
+            color: #007BFF;
+        }
+
+        .result .result-item {
+            margin-bottom: 10px;
+        }
+
+        .result .result-item span {
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 style="text-align: center; color: #007BFF;">Experiment 5:NO LOAD & BLOCKED ROTOR TESTS ON 3-PHASE INDUCTION
+            MOTOR</h1>
+        <div class="section">
+            <h2>EQUIVALENT CIRCUIT PARAMETERS </h2>
+            <div class="input-group">
+                <label for="lowHigh">Low speed/High speed:</label>
+                <select id="lowHigh" onkeydown="focusNext(event)">
+                    <option value="low">Low speed</option>
+                    <option value="high">High speed</option>
+                </select>
+            </div>
+            <div class="input-group">
+
+                <label for="Voc">Voc (V):</label>
+                <input type="number" id="Voc" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="Ioc">Ioc (A):</label>
+                <input type="number" id="Ioc" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="Woc">Woc (W):</label>
+                <input type="number" id="Woc" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="Vsc">Vsc (V):</label>
+                <input type="number" id="Vsc" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="Isc">Isc (A):</label>
+                <input type="number" id="Isc" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="Wsc">Wsc (W):</label>
+                <input type="number" id="Wsc" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="Rdc">Rdc (Ω):</label>
+                <input type="number" id="Rdc" onkeydown="focusNext(event)">
+            </div>
+
+            <button onclick="calculateParameters()">Calculate</button>
+            <div class="result" id="ParametersResult"></div>
+        </div>
+
+        <!--torque speed characteristics-->
+        <div class="section">
+            <h2>TORQUE SPEED CHARACTERISTICS FROM EQUIVALENT CIRCUIT</h2>
+
+            <div class="input-group">
+                <label for="lowHigh2">Low speed/High speed:</label>
+                <select id="lowHigh2" onkeydown="focusNext(event)">
+                    <option value="low">Low speed</option>
+                    <option value="high">High speed</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="N">N (rpm):</label>
+                <input type="number" id="N" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="R1">R1 (Ω):</label>
+                <input type="number" id="R1" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="R2dash">Rdc (Ω):</label>
+                <input type="number" id="R2dash" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="X1">Rdc (Ω):</label>
+                <input type="number" id="X1" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="X2dash">Rdc (Ω):</label>
+                <input type="number" id="X2dash" onkeydown="focusNext(event)">
+            </div>
+            <button onclick="calculateToqueChara()">Calculate</button>
+            <div class="result" id="toqueCharaResult"></div>
+        </div>
+    </div>
+
+    <script>
+        function calculateToqueChara() {
+            const lowHigh = document.getElementById('lowHigh2').value;
+            const N = parseFloat(document.getElementById('N').value);
+            const R1 = parseFloat(document.getElementById('R1').value);
+            const R2dash = parseFloat(document.getElementById('R2dash').value);
+            const X1 = parseFloat(document.getElementById('X1').value);
+            const X2dash = parseFloat(document.getElementById('X2dash').value);
+
+            //calculation toque developed
+            const Ns = lowHigh === 'low' ? 750 : 1500;
+            const slip = (Ns - N) / Ns;
+            const V = lowHigh === 'low' ? 400 : (400 / Math.sqrt(3));
+            const I2dash = V / Math.sqrt((R1 + (R2dash / slip)) * (R1 + (R2dash / slip)) + (X1 + X2dash) * (X1 + X2dash));
+            const P2 = 3 * I2dash * I2dash * R2dash / slip;
+            const torque = P2 / (2 * Math.PI * Ns / 60);
+
+            document.getElementById('toqueCharaResult').innerHTML = `
+                <h3>Given Values:</h3>
+                <div class="result-item"><span>N :</span> ${N} rpm</div>
+                <div class="result-item"><span>R1 :</span> ${R1} ohm</div>
+                <div class="result-item"><span>R2' :</span> ${R2dash} ohm</div>
+                <div class="result-item"><span>X1 :</span> ${X1} V</div>
+                <div class="result-item"><span>X2' :</span> ${X2dash} A</div>
+                
+                <h3>Calculated Values: for ${lowHigh} speed</h3>
+                <div class="result-item"><span>Synchronous speed,Ns = </span> ${Ns} rpm</div>
+                <div class="result-item"><span>Assume speed,N = </span> ${N} V</div>
+                <div class="result-item"><span> % Slip = </span> ${slip} %</div> 
+                <div class="result-item"><span>V = </span> ${V} V </div> 
+                <div class="result-item"><span> Rotor current, I2' = </span> ${I2dash}  A </div>
+                <div class="result-item"><span>Rotor Input P2 = </span> ${P2}  W</div> 
+                <div class="result-item"><span>Torque developed = </span> ${torque} N-m</div>
+            `;
+
+        }
+
+
+        function calculateParameters() {
+            const lowHigh = document.getElementById('lowHigh').value;
+            const Voc = parseFloat(document.getElementById('Voc').value);
+            const Ioc = parseFloat(document.getElementById('Ioc').value);
+            const Woc = parseFloat(document.getElementById('Woc').value);
+            const Vsc = parseFloat(document.getElementById('Vsc').value);
+            const Isc = parseFloat(document.getElementById('Isc').value);
+            const Wsc = parseFloat(document.getElementById('Wsc').value);
+            const Rdc = parseFloat(document.getElementById('Rdc').value);
+
+            //perphase values
+            const Vo = lowHigh === 'low' ? Voc : (Voc / Math.sqrt(3));
+            const Vs = lowHigh === 'low' ? Vsc : (Vsc / Math.sqrt(3));
+            const Io = lowHigh === 'low' ? (Ioc / Math.sqrt(3)) : Ioc;
+            const Is = lowHigh === 'low' ? (Isc / Math.sqrt(3)) : Isc;
+            const cosphi = (Woc / (3 * Vo * Io));
+            const phi = Math.acos(cosphi) * (180 / Math.PI);
+            const phiRadian = Math.acos(cosphi);
+            const sinphi = Math.sin(phiRadian);
+            const Rc = (Vo / (Io * cosphi));
+            const Xm = (Vo / (Io * sinphi));
+            const Zo1 = (Vs / Is);
+            const Ro1 = (Wsc / (3 * Is * Is));
+            const Xo1 = Math.sqrt((Zo1 * Zo1) - (Ro1 * Ro1));
+            const R1 = (3 * 1.2 * Rdc / 2);
+            const R2dash = Ro1 - R1;
+            const X2dash = (Xo1 / 2);
+
+            document.getElementById('ParametersResult').innerHTML = `
+                <h3>Given Values:</h3>
+                <div class="result-item"><span>Voc :</span> ${Voc} V</div>
+                <div class="result-item"><span>Ioc :</span> ${Ioc} A</div>
+                <div class="result-item"><span>Woc :</span> ${Woc} W</div>
+                <div class="result-item"><span>Vsc :</span> ${Vsc} V</div>
+                <div class="result-item"><span>Isc :</span> ${Isc} A</div>
+                <div class="result-item"><span>Wsc :</span> ${Wsc} W</div>
+                <div class="result-item"><span>Rdc :</span> ${Rdc} Ω</div>
+                
+                <h3>Calculated Values: for ${lowHigh} speed</h3>
+                <div class="result-item"><span>Vo  = </span> ${Vo} V</div>
+                <div class="result-item"><span>Vs  = </span> ${Vs} V</div>
+                <div class="result-item"><span>Io  = </span> ${Io} A</div> 
+                <div class="result-item"><span>Is  = </span> ${Is} A</div> 
+                <div class="result-item"><span>cos Φ₀ = (Woc/(3 Vo Io) = </span> ${cosphi} </div> 
+                <div class="result-item"><span> Φ₀ = cos⁻¹(cos Φ₀) = </span> ${phi}  ° </div>
+                <div class="result-item"><span>sin Φ₀ = </span> ${sinphi} </div> 
+                <div class="result-item"><span>Rc = Vo/(Io cos Φ₀) = </span> ${Rc} Ω</div>
+                <div class="result-item"><span>Xm = Vo/(Io sin Φ₀) = </span> ${Xm} Ω</div>
+                <div class="result-item"><span>Zo1 = Vs/Is = </span> ${Zo1} Ω</div>
+                <div class="result-item"><span>Ro1 = Wsc/(3 Is^2) = </span> ${Ro1} Ω</div>
+                <div class="result-item"><span>Xo1 = √(Zo1^2 - Ro1^2) = </span> ${Xo1} Ω</div>  
+                <div class="result-item"><span>R1 = 3 x 1.2 x Rdc/2 = </span> ${R1} Ω</div> 
+                <div class="result-item"><span>R2' = Ro1-R1 = </span> ${R2dash} Ω</div>
+                <div class="result-item"><span>X2' = Xo1/2 = </span> ${X2dash} Ω</div>  
+
+            `;
+        }
+
+        function focusNext(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevent form submission
+                let formElements = Array.from(document.querySelectorAll('input, button'));
+                let index = formElements.indexOf(event.target);
+                if (index !== -1 && index < formElements.length - 1) {
+                    formElements[index + 1].focus();
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slip Test Calculations</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .section {
+            margin-bottom: 30px;
+            border-bottom: 2px solid #007BFF;
+            padding-bottom: 15px;
+        }
+        .subsection {
+            margin-bottom: 30px;
+            border-bottom: 2px solid #00ff62;
+            padding-bottom: 15px;
+        }
+        
+        .section h2 {
+            color: #007BFF;
+            margin: 0 0 10px 0;
+            font-size: 1.5em;
+        }
+
+        .section h3 {
+            color: #007BFF;
+            margin: 10px 0;
+            font-size: 1.2em;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+
+        button {
+            padding: 12px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #f9f9f9;
+            color: #333;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+        }
+
+        .result h3 {
+            margin-top: 0;
+            color: #007BFF;
+        }
+
+        .result .result-item {
+            margin-bottom: 10px;
+        }
+
+        .result .result-item span {
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 style="text-align: center; color: #007BFF;">Experiment 3: VOLTAGE REGULATION OF 3-PHASE ALTERNATOR</h1>
+
+        <!-- Emf method -->
+        <div class="section">
+            <h2>EMF METHOD CALCULATION</h2>
+            <!-- Emf method -->
+            <div class="subsection">
+            <div class="input-group">
+                <label for="Rdc">Rdc (Ω):</label>
+                <input type="number" id="Rdc" step="0.001" onkeydown="focusNext(event)">
+            </div>
+
+            <div class="input-group">
+                <label for="Isc">Isc (A):</label>
+                <input type="number" id="Isc" step="0.001" onkeydown="focusNext(event)">
+            </div>
+
+            <button onclick="calculateEmfMethod()">Calculate</button>
+            <div class="result" id="emfMethodResult"></div>
+            </div>
+
+        <!--  Regulation at full load Calculation -->
+
+        <div class="subsection">
+            <h2>emf method regulaation at full load</h2>
+
+            <div class="input-group">
+                <label for="pFactor">Power Factor:</label>
+                <input type="number" id="pFactor" step="0.01" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="lagLead">Lag/Lead:</label>
+                <select id="lagLead" onkeydown="focusNext(event)">
+                    <option value="lag">Lag</option>
+                    <option value="lead">Lead</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="Ra">Ra (Ω):</label>
+                <input type="number" id="Ra" step="0.01" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="Xs">Xs (Ω):</label>
+                <input type="number" id="Xs" step="0.01" onkeydown="focusNext(event)">
+            </div>
+            <button onclick="calculateRegulation()">Calculate</button>
+            <div class="result" id="regulationResult"></div>
+        </div>
+        </div>
+        <!-- mmf method  -->
+           <div class="section">
+            <h2>MMF METHOD CALCULATION</h2>
+
+            <div class="subsection">
+            <div class="input-group">
+                <label for="pFactor2">Power Factor:</label>
+                <input type="number" id="pFactor2" step="0.01" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="lagLead2">Lag/Lead:</label>
+                <select id="lagLead2" onkeydown="focusNext(event)">
+                    <option value="lag">Lag</option>
+                    <option value="lead">Lead</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="Ra2">Ra (Ω):</label>
+                <input type="number" id="Ra2" step="0.01" onkeydown="focusNext(event)">
+            </div>
+            <button onclick="calculateMmfMethodEr()">Calculate Er</button>
+            <div class="result" id="MmfMethodErResult"></div>
+        
+        </div>
+        <div class="subsection">
+            <!--step 2-->
+            <div class="input-group">
+                <label for="Ifr"><span>I<sub>fr</sub></span> (A):</label>
+                <input type="number" id="Ifr" step="0.01" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="Ifa"><span>I<sub>fa</sub></span> (A):Ifa is the field current required to circulate rated
+                    current on short circuit (from SC test)</label>
+                <input type="number" id="Ifa" step="0.01" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="sigma">Enter σ from previous step:</label>
+                <input type="number" id="sigma" step="0.01" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="phi">Enter Φ from previous step:</label>
+                <input type="number" id="phi" step="0.01" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="lagLead3">Lag/Lead:</label>
+                <select id="lagLead3" onkeydown="focusNext(event)">
+                    <option value="lag">Lag</option>
+                    <option value="lead">Lead</option>
+                </select>
+            </div>
+            <button onclick="calculateMmfMethodStep2()">Calculate</button>
+            <div class="result" id="MmfMethodStep2Result"></div>
+        </div>
+
+        <div class="subsection">
+            <!--step 3-->
+            <div class="input-group">
+                <label for="Ef">Ef corresponding to If from OCC:</label>
+                <input type="number" id="Ef" step="0.01" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="delta">Enter value of δ from previous step :</label>
+                <input type="number" id="delta" step="0.01" onkeydown="focusNext(event)">
+            </div>
+            <button onclick="calculateMmfMethodStep3()">Calculate</button>
+            <div class="result" id="MmfMethodStep3Result"></div>
+        </div>
+        </div>
+
+        <!-- POTIER METHOD step 1 -->
+
+        <div class="section">
+            <h2>POTIER METHOD CALCULATION</h2>
+         <div class="subsection">
+            <div class="input-group">
+                <label for="pFactor3">Power Factor:</label>
+                <input type="number" id="pFactor3" step="0.01" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="lagLead4">Lag/Lead:</label>
+                <select id="lagLead4" onkeydown="focusNext(event)">
+                    <option value="lag">Lag</option>
+                    <option value="lead">Lead</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="Ra3">Ra (Ω):</label>
+                <input type="number" id="Ra3" step="0.01" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="BC">Enter value BC from the OCC :</label>
+                <input type="number" id="BC" step="0.01" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="I">Enter value of I (field current) corresponding to BC:</label>
+                <input type="number" id="I" step="0.01" onkeydown="focusNext(event)">
+            </div>
+            <button onclick="calculatePotierMethodStep1()">Calculate</button>
+            <div class="result" id="potierMethodstep1Result"></div>
+        </div>
+        <!--step 2-->
+        <div class="subsection">
+
+            <div class="input-group">
+                <label for="Ifr2"><span>I<sub>fr</sub></span> (A):</label>
+                <input type="number" id="Ifr2" step="0.01" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="Ifa2"><span>I<sub>fa</sub></span> (A):Ifa = AB from Potier triangle :</label>
+                <input type="number" id="Ifa2" step="0.01" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="sigma2">Enter σ from previous step:</label>
+                <input type="number" id="sigma2" step="0.01" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="phi2">Enter Φ from previous step:</label>
+                <input type="number" id="phi2" step="0.01" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="lagLead5">Lag/Lead:</label>
+                <select id="lagLead5" onkeydown="focusNext(event)">
+                    <option value="lag">Lag</option>
+                    <option value="lead">Lead</option>
+                </select>
+            </div>
+            <button onclick="calculatePotierMethodStep2()">Calculate</button>
+            <div class="result" id="potierMethodstep2Result"></div>
+        </div>
+        <!--step 3-->
+        <div class="subsection">
+
+            <div class="input-group">
+                <label for="Ef2">Ef corresponding to If from OCC:</label>
+                <input type="number" id="Ef2" step="0.01" onkeydown="focusNext(event)">
+            </div>
+            <div class="input-group">
+                <label for="delta2">Enter value of δ from previous step :</label>
+                <input type="number" id="delta2" step="0.01" onkeydown="focusNext(event)">
+            </div>
+            <button onclick="calculatePotierMethodStep3()">Calculate</button>
+            <div class="result" id="potierMethodstep3Result"></div>
+        </div>
+        </div>
+        <script>
+            function calculatePotierMethodStep3() {
+                const Ef = parseFloat(document.getElementById('Ef2').value);
+                const delta = parseFloat(document.getElementById('delta2').value);
+
+                //%regulation calculation
+
+                const persentageRegulation = ((Ef - 230) * 100 / 230);
+
+                document.getElementById('potierMethodstep3Result').innerHTML = `
+
+               
+
+                <div class="result-item"><span style="font-weight: 800; color: blue;"> E<sub>f</sub> </span>= E<sub>f</sub> < δ ° V =  ${Ef} < ${delta}  ° V</div>
+                <div class="result-item"><span> δ </span>: ${delta} ° </div>
+                <div class="result-item"><span> V </span>: 230 V </div>
+                <div class="result-item"><span> % regulation = (Ef-V ) x 100/ V </span>  = (${Ef}-230) x 100/230 = ${persentageRegulation}  %</div>
+
+                 `;
+            }
+            function calculatePotierMethodStep2() {
+                const Ifr = parseFloat(document.getElementById('Ifr2').value);
+                const Ifa = parseFloat(document.getElementById('Ifa2').value);
+                const sigma = parseFloat(document.getElementById('sigma2').value);
+                const phi = parseFloat(document.getElementById('phi2').value);
+                const lagLead = document.getElementById('lagLead5').value;
+
+                // vector Ifr
+                const IfrMagnitude = Ifr;
+                const IfrAngle = (sigma + 90);
+
+                //vector Ifa
+                const IfaMagnitude = Ifa;
+                const IfaAngle = lagLead === 'lead' ? (phi + 180) : (-phi + 180);
+
+                //vector Ifr +Ifa
+                const IfrRect = polarToRectangular(IfrMagnitude, IfrAngle);
+                const IfaRect = polarToRectangular(IfaMagnitude, IfaAngle);
+
+                const IfReal = IfrRect.real + IfaRect.real;
+                const IfImg = IfrRect.imag + IfrRect.imag;
+
+                //If in polar form
+                const IfMagnitude = Math.sqrt(IfReal * IfReal + IfImg * IfImg);
+                const IfAngle = Math.atan2(IfImg, IfReal) * (180 / Math.PI);
+                const delta = (IfAngle - 90);
+
+                document.getElementById('potierMethodstep2Result').innerHTML = `
+
+                <div class="result-item"><span> I<sub>fr</sub> </span>: ${Ifr} A</div>
+                <div class="result-item"><span> I<sub>fa</sub> </span>: ${Ifa} A</div>
+                <div class="result-item"><span> Φ </span>: ${phi} °  ,${lagLead}</div>
+                <div class="result-item"><span> σ </span>: ${sigma} ° </div>
+
+                <div class="result-item"><span style="font-weight: 800; color: blue;"> I<sub>fr</sub> </span>= I<sub>fr</sub> < (σ + 90 )  = ${Ifr} < ${IfrAngle} A</div>
+                <div class="result-item"><span style="font-weight: 800; color: blue;"> I<sub>fa</sub> </span> = I<sub>fa</sub> <(-Φ+180) for lag,  I<sub>fa</sub> <(Φ+180) for lead =  ${Ifa} < ${IfaAngle} A</div>
+                <div class="result-item"><span style="font-weight: 800; color: blue;"> I<sub>f</sub>  = I<sub>fr</sub> + I<sub>fa</sub> </span> </sub> </span> = I <sub>f</sub> < (90+δ)= ${IfMagnitude} < (90 +${IfAngle - 90}) A</div>
+                <div class="result-item"><span> I<sub>f</sub> </span>: ${IfMagnitude} </div>
+                <div class="result-item"><span> δ </span>: ${delta} ° </div>
+
+                <p style="color:red;">Refer OCC and find Ef corresponding to If. </p>
+                <p style="color:red">And enter below for further calculations. </p>
+                 `;
+
+            }
+
+            function calculatePotierMethodStep1() {
+                const pf = parseFloat(document.getElementById('pFactor3').value);
+                const Ra = parseFloat(document.getElementById('Ra3').value);
+                const BC = parseFloat(document.getElementById('BC').value);
+                const I = parseFloat(document.getElementById('I').value);
+                const lagLead = document.getElementById('lagLead4').value;
+
+                //calculation
+                const Xal = BC / I;
+
+                // Set Vf with a magnitude of 230 and angle 0°
+                const VMagnitude = 230;
+                const VAngle = 0;
+                // Armature current vector
+                const IaMagnitude = 10.9;// Magnitude of the armature current
+                const phi = Math.acos(pf) * (180 / Math.PI); // Phase angle in degrees
+                const IaAngle = lagLead === 'lead' ? phi : -phi; // Angle for Ia based on lead or lag
+                // Convert V and Ia to rectangular form
+                const VRect = polarToRectangular(VMagnitude, VAngle);
+                const IaRect = polarToRectangular(IaMagnitude, IaAngle);
+
+                // Calculate the voltage drop (Ia * (Ra + jXq))
+                const voltageDropReal = IaRect.real * Ra - IaRect.imag * Xal;
+                const voltageDropImag = IaRect.real * Xal + IaRect.imag * Ra;
+
+                // Calculate the open-circuit voltage vector EOC
+                const ErReal = VRect.real + voltageDropReal;
+                const ErImag = VRect.imag + voltageDropImag;
+
+                // Convert the result to polar form
+                const ErMagnitude = Math.sqrt(ErReal * ErReal + ErImag * ErImag);
+                const ErAngle = Math.atan2(ErImag, ErReal) * (180 / Math.PI);
+
+                const sigma = ErAngle;
+
+                document.getElementById('potierMethodstep1Result').innerHTML = `
+                <div class="result-item"><span>cos Φ(pf)</span>: ${pf}   ${lagLead}</div>
+                <div class="result-item"><span> Φ </span>: ${phi}</div>
+                <div class="result-item"><span> BC </span>: ${BC} V</div>
+                <div class="result-item"><span> I </span>: ${I} A</div>
+                <div class="result-item"><span> BC </span>= I x Xal</div>
+
+                <div class="result-item"><span> Xal </span>: BC/I  = ${BC}/${I} = ${Xal}  Ω</div>
+                 <div class="result-item"><span style="font-weight: 800; color: blue;">V</span>: 230 <0° </div>
+                 <div class="result-item"><span style="font-weight: 800; color: blue;">I</span>: 10.9 < ${IaAngle.toFixed(2)}° </div>
+
+                <div class="result-item"><span><span><span style="font-weight: 800; color: blue;">Er</span></span> :  <span style="font-weight: 800; color: blue;">V</span> + <span style="font-weight: 800; color: blue;">I</span>(R<sub>a</sub>+  X<sub>al</sub>) =  Er < σ° = </span> ${ErMagnitude.toFixed(2)} < ${ErAngle.toFixed(2)}° V </div>
+               <div class="result-item"><span>σ:</span> ${sigma.toFixed(2)}° </div>
+
+               <p style="color:red">Refer OCC and find Ifr corresponding to Er. </p>
+               <p style="color:red">And enter below for further calculations. </p>
+                 `;
+
+
+            }
+
+            function calculateMmfMethodStep3() {
+                const Ef = parseFloat(document.getElementById('Ef').value);
+                const delta = parseFloat(document.getElementById('delta').value);
+
+                //%regulation calculation
+
+                const persentageRegulation = ((Ef - 230) * 100 / 230);
+
+                document.getElementById('MmfMethodStep3Result').innerHTML = `
+
+               
+
+                <div class="result-item"><span style="font-weight: 800; color: blue;"> E<sub>f</sub> </span>= E<sub>f</sub> < δ ° V =  ${Ef} < ${delta}  ° V</div>
+                <div class="result-item"><span> δ </span>: ${delta} ° </div>
+                <div class="result-item"><span> V </span>: 230 V </div>
+                <div class="result-item"><span> % regulation = (Ef-V ) x 100/ V </span>  = (${Ef}-230) x 100/230 = ${persentageRegulation}  %</div>
+
+                 `;
+
+
+            }
+            function calculateMmfMethodStep2() {
+                const Ifr = parseFloat(document.getElementById('Ifr').value);
+                const Ifa = parseFloat(document.getElementById('Ifa').value);
+                const sigma = parseFloat(document.getElementById('sigma').value);
+                const phi = parseFloat(document.getElementById('phi').value);
+                const lagLead = document.getElementById('lagLead3').value;
+
+
+                // vector Ifr
+                const IfrMagnitude = Ifr;
+                const IfrAngle = (-sigma + 90);
+
+                //vector Ifa
+                const IfaMagnitude = Ifa;
+                const IfaAngle = lagLead === 'lead' ? (phi + 180) : (-phi + 180);
+
+                //vector Ifr +Ifa
+                const IfrRect = polarToRectangular(IfrMagnitude, IfrAngle);
+                const IfaRect = polarToRectangular(IfaMagnitude, IfaAngle);
+
+                const IfReal = IfrRect.real + IfaRect.real;
+                const IfImg = IfrRect.imag + IfrRect.imag;
+
+                //If in polar form
+                const IfMagnitude = Math.sqrt(IfReal * IfReal + IfImg * IfImg);
+                const IfAngle = Math.atan2(IfImg, IfReal) * (180 / Math.PI);
+                const delta = (IfAngle - 90);
+
+                document.getElementById('MmfMethodStep2Result').innerHTML = `
+
+                <div class="result-item"><span> I<sub>fr</sub> </span>: ${Ifr} A</div>
+                <div class="result-item"><span> I<sub>fa</sub> </span>: ${Ifa} A</div>
+                <div class="result-item"><span> Φ </span>: ${phi} °  ,${lagLead}</div>
+                <div class="result-item"><span> σ </span>: ${sigma} ° </div>
+
+                <div class="result-item"><span style="font-weight: 800; color: blue;"> I<sub>fr</sub> </span>= I<sub>fr</sub> < (-σ + 90 )  = ${Ifr} < ${IfrAngle} A</div>
+                <div class="result-item"><span style="font-weight: 800; color: blue;"> I<sub>fa</sub> </span> = I<sub>fa</sub> <(-Φ+180) for lag,  I<sub>fa</sub> <(Φ+180) for lead =  ${Ifa} < ${IfaAngle} A</div>
+                <div class="result-item"><span style="font-weight: 800; color: blue;"> I<sub>f</sub>  = I<sub>fr</sub> + I<sub>fa</sub> </span> </sub> </span> = I <sub>f</sub> < (90+δ)= ${IfMagnitude} < (90 +${IfAngle - 90}) A</div>
+                <div class="result-item"><span> I<sub>f</sub> </span>: ${IfMagnitude} </div>
+                <div class="result-item"><span> δ </span>: ${delta} ° </div>
+
+                <p style="color:red;">Refer OCC and find Ef corresponding to If. </p>
+                <p style="color:red">And enter below for further calculations. </p>
+                 `;
+
+            }
+            function calculateMmfMethodEr() {
+                const pf = parseFloat(document.getElementById('pFactor2').value);
+                const lagLead = document.getElementById('lagLead2').value;
+                const Ra = parseFloat(document.getElementById('Ra2').value);
+                console.log(lagLead);
+                // Set Vf with a magnitude of 230 and angle 0°
+                const VMagnitude = 230;
+                const VAngle = 0;
+                // Armature current vector
+                const IaMagnitude = 10.9;// Magnitude of the armature current
+                const phi = Math.acos(pf) * (180 / Math.PI); // Phase angle in degrees
+                const IaAngle = lagLead === 'lead' ? phi : -phi; // Angle for Ia based on lead or lag
+                // Convert V and Ia to rectangular form
+                const VRect = polarToRectangular(VMagnitude, VAngle);
+                const IaRect = polarToRectangular(IaMagnitude, IaAngle);
+
+                // Calculate the voltage drop (Ia * (Ra + jXq))
+                const voltageDropReal = IaRect.real * Ra
+                const voltageDropImag = IaRect.imag * Ra;
+
+                // Calculate the open-circuit voltage vector EOC
+                const ErReal = VRect.real + voltageDropReal;
+                const ErImag = VRect.imag + voltageDropImag;
+
+                // Convert the result to polar form
+                const ErMagnitude = Math.sqrt(ErReal * ErReal + ErImag * ErImag);
+                const ErAngle = Math.atan2(ErImag, ErReal) * (180 / Math.PI);
+
+                // Open-circuit voltage angle δ
+                const sigma = ErAngle /* Provide the value for δ, in degrees */;
+                const sigmaRadians = sigma * (Math.PI / 180);
+
+                document.getElementById('MmfMethodErResult').innerHTML = `
+                <div class="result-item"><span>cos Φ(pf)</span>: ${pf}   ${lagLead}</div>
+                <div class="result-item"><span> Φ </span>: ${phi}</div>
+                
+                 <div class="result-item"><span style="font-weight: 800; color: blue;">V</span>: 230 <0° </div>
+                 <div class="result-item"><span style="font-weight: 800; color: blue;">I</span>: 10.9 < ${IaAngle.toFixed(2)}° </div>
+
+                <div class="result-item"><span><span><span style="font-weight: 800; color: blue;">Er</span></span> :  <span style="font-weight: 800; color: blue;">V</span> + <span style="font-weight: 800; color: blue;">I</span>R<sub>a</sub>  =  Er < -σ° = </span> ${ErMagnitude.toFixed(2)} < ${ErAngle.toFixed(2)}° V </div>
+               <div class="result-item"><span>σ:</span> ${-ErAngle.toFixed(2)}° </div>
+
+               <p style="color:red">Refer OCC and find Ifr corresponding to Er. </p>
+               <p style="color:red">And enter below for further calculations. </p>
+                 `;
+
+            }
+
+            function calculateEmfMethod() {
+                const Rdc = parseFloat(document.getElementById('Rdc').value);
+                const Isc = parseFloat(document.getElementById('Isc').value);
+
+
+                const Ra = 1.2 * Rdc;
+                const Zs = 230 / Isc;
+                const Xs = Math.sqrt(Math.pow(Zs, 2) - Math.pow(Ra, 2)).toFixed(2);
+
+
+                document.getElementById('emfMethodResult').innerHTML = `
+                <h3>Given Values:</h3>
+                <div class="result-item"><span>Rdc:</span> ${Rdc} Ω</div>
+                <div class="result-item"><span>Isc:</span> ${Isc} A</div>
+                
+                <h3>Calculated Values:</h3>
+                <div class="result-item"><span>Rated voltage :</span>  230 V</div>
+                <div class="result-item"><span>Armature Resistance (Ra):</span> 1.2 × ${Rdc} = ${Ra.toFixed(2)} Ω</div>
+                <div class="result-item"><span>Synchronous impedance,Zs:</span> Zs = V / Isc = ${Zs.toFixed(2)} Ω</div>
+                <div class="result-item"><span> Synchronous reactance,Xs :</span> √(Zs² - Ra²) = ${Xs} Ω</div>
+                
+            `;
+            }
+
+            function polarToRectangular(magnitude, angleInDegrees) {
+                const angleInRadians = angleInDegrees * (Math.PI / 180);
+                return {
+                    real: magnitude * Math.cos(angleInRadians),
+                    imag: magnitude * Math.sin(angleInRadians)
+                };
+            }
+
+
+            function calculateRegulation() {
+
+                const pf = parseFloat(document.getElementById('pFactor').value);
+                const lagLead = document.getElementById('lagLead').value;
+                const Ra = parseFloat(document.getElementById('Ra').value);
+                const Xs = parseFloat(document.getElementById('Xs').value);
+
+
+                // Set Vf with a magnitude of 230 and angle 0°
+                const VMagnitude = 230;
+                const VAngle = 0;
+                // Armature current vector
+                const IaMagnitude = 10.9;// Magnitude of the armature current
+                const phi = Math.acos(pf) * (180 / Math.PI); // Phase angle in degrees
+                const IaAngle = lagLead === 'lead' ? phi : -phi; // Angle for Ia based on lead or lag
+                // Convert V and Ia to rectangular form
+                const VRect = polarToRectangular(VMagnitude, VAngle);
+                const IaRect = polarToRectangular(IaMagnitude, IaAngle);
+
+                // Calculate the voltage drop (Ia * (Ra + jXq))
+                const voltageDropReal = IaRect.real * Ra - IaRect.imag * Xs;
+                const voltageDropImag = IaRect.real * Xs + IaRect.imag * Ra;
+
+                // Calculate the open-circuit voltage vector EOC
+                const EOCReal = VRect.real + voltageDropReal;
+                const EOCImag = VRect.imag + voltageDropImag;
+
+                // Convert the result to polar form
+                const EOCMagnitude = Math.sqrt(EOCReal * EOCReal + EOCImag * EOCImag);
+                const EOCAngle = Math.atan2(EOCImag, EOCReal) * (180 / Math.PI);
+
+                // Open-circuit voltage angle δ
+                const delta = EOCAngle /* Provide the value for δ, in degrees */;
+                const deltaRadians = delta * (Math.PI / 180);
+
+                //calculate %regulation
+                const percentRegulation = (EOCMagnitude - VMagnitude) * 100 / VMagnitude
+                // Display the results
+                document.getElementById('regulationResult').innerHTML = `
+        <h3>Given Values:</h3>
+        <div class="result-item"><span>cos Φ(pf):</span> ${pf.toFixed(2)}</div>
+        <div class="result-item"><span>Lag/Lead:</span> ${lagLead}</div>
+        <div class="result-item"><span>Armature Resistance (Ra):</span> ${Ra} Ω</div>
+        <div class="result-item"><span>Quadrature Axis Synchronous Reactance (Xs):</span> ${Xs} Ω</div>
+        <h3>Calculated Values:</h3>
+        <div class="result-item"><span><span style="font-weight: 800; color: blue;">V</span>:</span> 230 <0° V</div>
+        <div class="result-item"><span style="font-weight: 800; color: blue;">I<sub>a</sub></span>: ${IaMagnitude} < ${IaAngle}° A</div>
+        <div class="result-item"><span><span><span style="font-weight: 800; color: blue;">Ef</span></span> :  <span style="font-weight: 800; color: blue;">V</span> + <span style="font-weight: 800; color: blue;">I<sub>a</sub></span>(R<sub>a</sub> + jX<sub>s</sub>)  =  Ef < δ° = </span> ${EOCMagnitude.toFixed(2)} < ${EOCAngle.toFixed(2)}° V </div>
+        <div class="result-item"><span> δ:</span> ${EOCAngle.toFixed(2)}° </div>
+        <div class="result-item"><span>% Regulation: (Ef-V) x 100/ V =</span> ${percentRegulation.toFixed(2)}% </div>
+    `;
+
+            }
+
+            function focusNext(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault(); // Prevent form submission
+                    let formElements = Array.from(document.querySelectorAll('input, button'));
+                    let index = formElements.indexOf(event.target);
+                    if (index !== -1 && index < formElements.length - 1) {
+                        formElements[index + 1].focus();
+                    }
+                }
+            }
+
+        </script>
+</body>
+
+</html>
